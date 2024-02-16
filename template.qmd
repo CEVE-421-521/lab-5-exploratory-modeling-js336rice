@@ -60,3 +60,57 @@ Plots.default(; margin=5Plots.mm)
 using Revise
 using HouseElevation
 ```
+
+Choosing Galveston Pier 21, Texas
+The guage is at 29° 18.6 N, 94° 47.6 W
+https://maps.app.goo.gl/GyanSMA2fp9rkVrT9
+
+Our building is 302 17th St, Galveston, TX 77550,
+Home area as estimated by google maps: 30ftx50ft home = 1500ft^2
+Home value from zillow: 247,700 (Round up to 250,000)
+
+The home is 4.41 feet or 1.34 meters above sea level in elevation.
+Looking at it on street view, the house appears to be on concrete blocks about 6 inches tall, giving it an effective height of 4.91 feet.
+
+Row 98 from the data is two-story, no basement in Galveston, so we'll be using that for our depth-damage curve.  The home is on concrete blocks, so we can be confident that it doesn't have a basement.
+
+
+```{julia}
+#| output: false
+house = let
+    haz_fl_dept = CSV.read("data/haz_fl_dept.csv", DataFrame) # read in the file
+    desc = "Two-story, no basement in Galveston"
+    row = @rsubset(haz_fl_dept, :Column1 == 98)[1, :,] # select the row I want
+    area = 1500u"ft^2"
+    height_above_gauge = 4.91u"ft"
+    House(
+        row;
+        area=area,
+        height_above_gauge=height_above_gauge,
+        value_usd=250_000,
+    )
+end
+```
+
+```{julia}
+#| code-fold: true
+let
+    depths = uconvert.(u"ft", (-7.0u"ft"):(1.0u"inch"):(30.0u"ft"))
+    damages = house.ddf.(depths) .* house.value_usd ./ 1000
+    scatter(
+        depths,
+        damages;
+        xlabel="Flood Depth",
+        ylabel="Damage (Thousand USD)",
+        label="$(house.description)\n($(house.source))",
+        legend=:bottomright,
+        size=(800, 400),
+        yformatter=:plain, # prevents scientific notation
+    )
+end
+```
+```{julia}
+elevation_cost(house, 10u"ft")
+```
+
+
