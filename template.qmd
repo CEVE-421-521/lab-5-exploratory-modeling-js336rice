@@ -223,3 +223,38 @@ Find Net Present Value:
 ```{julia}
 res = run_sim(a, sow, p)
 ```
+
+```{julia}
+
+Column_length = 10
+# I'm not well caught up on predictions or galveston weather, so I feel most comfortable sampling randomly for SLR and storm surge. 
+#For discount rate, I'd say I'm confident enough in my knowledge of macroeconomics to choose a distribution, but not enough to bias that distribution in any given direction.
+sows = [SOW(rand(slr_scenarios), draw_surge_distribution(), draw_discount_rate()) for _ in 1:Column_length] 
+
+#For situations like these where sample sizes are less than 10, and randomness or uncertainty aren't part of how high we elevate our house, I believe having a structured set of actions that we can reliable compare to be the best choice
+actions = [Action(i*1u"ft") for i in range(0, 12, Column_length)] 
+
+results = [run_sim(a, s, p) for (a, s) in zip(actions, sows)]
+```
+
+Make a data frame with our data:
+
+```{julia}
+df = DataFrame(
+    npv=results,
+    Δh_ft=[a.Δh_ft for a in actions],
+    slr_a=[s.slr.a for s in sows],
+    slr_b=[s.slr.b for s in sows],
+    slr_c=[s.slr.c for s in sows],
+    slr_tstar=[s.slr.tstar for s in sows],
+    slr_cstar=[s.slr.cstar for s in sows],
+    surge_μ=[s.surge_dist.μ for s in sows],
+    surge_σ=[s.surge_dist.σ for s in sows],
+    surge_ξ=[s.surge_dist.ξ for s in sows],
+    discount_rate=[s.discount_rate for s in sows],
+)
+```
+
+```{julia}
+println([Action(i*1u"ft") for i in range(0, 12, 10)])
+```
