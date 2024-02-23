@@ -70,7 +70,7 @@ Home area as estimated by google maps: 30ftx50ft home = 1500ft^2
 Home value from zillow: 247,700 (Round up to 250,000)
 
 The home is 4.41 feet or 1.34 meters above sea level in elevation.
-Looking at it on street view, the house appears to be on concrete blocks about 6 inches tall, giving it an effective height of 4.91 feet.
+Looking at it on street view, the house appears to be on concrete blocks about 6 inches tall, giving it an effective height of 4.91 feet.  Round this up to 5 so that it works.
 
 Row 98 from the data is two-story, no basement in Galveston, so we'll be using that for our depth-damage curve.  The home is on concrete blocks, so we can be confident that it doesn't have a basement.
 
@@ -82,7 +82,7 @@ house = let
     desc = "Two-story, no basement in Galveston"
     row = @rsubset(haz_fl_dept, :Column1 == 98)[1, :,] # select the row I want
     area = 1500u"ft^2"
-    height_above_gauge = 4.91u"ft"
+    height_above_gauge = 5u"ft"  #Previously used 4.91, had to round up to 5 to make it work with functions
     House(
         row;
         area=area,
@@ -109,8 +109,60 @@ let
     )
 end
 ```
+
+Check we can get the elevation cost:
 ```{julia}
 elevation_cost(house, 10u"ft")
+```
+
+And then plot elevation cost so we can visually make sure that it makes sense:
+
+```{julia}
+let
+    elevations = 0u"ft":0.25u"ft":14u"ft"
+    costs = [elevation_cost(house, eᵢ) for eᵢ in elevations]
+    scatter(
+        elevations,
+        costs ./ 1_000;
+        xlabel="Elevation",
+        ylabel="Cost (Thousand USD)",
+        label="$(house.description)\n($(house.source))",
+        legend=:bottomright,
+        size=(800, 400),
+        yformatter=:plain, # prevents scientific notation
+    )
+end
+```
+
+Time to model sea level rise!
+
+Read in the sea level rise data:
+
+```{julia}
+#| output: false
+slr_scenarios = let
+    df = CSV.read("data/slr_oddo.csv", DataFrame)
+    [Oddo17SLR(a, b, c, tstar, cstar) for (a, b, c, tstar, cstar) in eachrow(df)]
+end
+println("There are $(length(slr_scenarios)) parameter sets")
+```
+
+Plot data to visually verify that we read it in correctly:
+
+```{julia}
+let
+    years = 1900:2150
+    p = plot(;
+        xlabel="Year",
+        ylabel="Mean sea-level (ft)\nwith respect to the year 2000",
+        label="Oddo et al. (2017)",
+        legend=false
+    )
+    for s in rand(slr_scenarios, 250)
+        plot!(p, years, s.(years); color=:lightgrey, alpha=0.5, linewidth=0.5)
+    end
+    p
+end
 ```
 
 
