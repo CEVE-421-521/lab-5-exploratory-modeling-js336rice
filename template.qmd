@@ -164,5 +164,62 @@ let
     p
 end
 ```
+Storm surge distribution function.  We're taking a sample around our flood distribution values that we used in the previous labs.
 
+```{julia}
+function draw_surge_distribution()
+    μ = rand(Normal(5, 1))
+    σ = rand(Exponential(1.5))
+    ξ = rand(Normal(0.1, 0.05))
+    GeneralizedExtremeValue(μ, σ, ξ)
+end
+```
 
+Draw a distribution of storm surge values:
+
+```{julia}
+[draw_surge_distribution() for _ in 1:1000]
+```
+
+Get some discount rate samples.  I'm choosing to keep the sampling as-is here.  
+
+Justfication:
+Current USA interest rates are at 5% and I personally think they'll stay high for a while (I can exlain my reasoning for this but idk if it's on-topic for this lab), but I'm compensating for the fact that I don't believe assuming that people will be richer in the near future in Galveston (Speaking as someone who grew up in one, tourism-based economies are just as liable to shrink as they are to grow), so I'm taking it back down from 5% to 4% to compensate for this.
+
+```{julia}
+#| output: false
+function draw_discount_rate()
+    return rand(Normal(0.04, 0.02))
+end
+```
+Model the house from 2024 to 2083
+
+```{julia}
+#| output: false
+p = ModelParams(
+    house=house,
+    years=2024:2083
+)
+```
+
+Get SOW from surge distribution, discount rate, and sea level rise scenarios
+```{julia}
+#| output: false
+sow = SOW(
+    rand(slr_scenarios),
+    draw_surge_distribution(),
+    draw_discount_rate()
+)
+```
+Establish an action:
+
+```{julia}
+#| output: false
+a = Action(3.0u"ft")
+```
+
+Find Net Present Value:
+
+```{julia}
+res = run_sim(a, sow, p)
+```
