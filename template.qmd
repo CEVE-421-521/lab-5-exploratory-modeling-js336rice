@@ -378,7 +378,7 @@ scatter!(
 
 ```{julia}
 
-samples = 3
+samples = 10
 df = Get_Samples(0, samples)  
 Discount_Rate = df.discount_rate
 NPV = (df.npv)./1_000_000
@@ -393,7 +393,7 @@ scatter(
 )
 
 
-for i in range(1, 3)
+for i in range(start=1, stop=7, step=3)
     df = Get_Samples(i, samples)  
     Discount_Rate = df.discount_rate
     NPV = (df.npv)./1_000_000
@@ -410,27 +410,6 @@ for i in range(1, 3)
     
     #return current()
 end
-
-```
-
-```{julia}
-
-for i in range(1, 3)
-    df = Get_Samples(i, 3)  
-    Discount_Rate = df.discount_rate
-    NPV = (df.npv)./1_000_000
-    Height = Int.(ustrip.(df.Δh_ft))
-    plot = scatter(
-        Discount_Rate,
-        NPV;
-        color=Height,
-        xlabel="Discount Rate",
-        ylabel="NPV (Millions of USD)",
-        label="NPV given discount rate for 0ft elevation",
-    )
- 
-end  
-
 
 ```
 
