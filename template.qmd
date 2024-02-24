@@ -279,7 +279,7 @@ let
         NPV;
         color=Height,
         xlabel="Discount Rate",
-        ylabel="NPV Millions of (USD)",
+        ylabel="NPV (Millions of USD)",
         #group=labels,#repeat('0':'9', 1),
         #label = ["a" "b"],#[i] for i in 0:9,
         label="NPV given discount rate for 3ft elevation",
@@ -293,9 +293,9 @@ end
 There looks like there's some visible impact.  Does this hold for more samples?  What happens if we d0 100?
 
 ```{julia}
-function Get_Samples(Height, Column_Length)
-    sows = [SOW(rand(slr_scenarios), draw_surge_distribution(), draw_discount_rate()) for _ in 1:Column_length] 
-    actions = [Action(Height*u"ft") for _ in 1:Column_length]
+function Get_Samples(Height, Col)
+    sows = [SOW(rand(slr_scenarios), draw_surge_distribution(), draw_discount_rate()) for _ in 1:Col] 
+    actions = [Action(Height*u"ft") for _ in 1:Col]
     results = [run_sim(a, s, p) for (a, s) in zip(actions, sows)]
 
     df = DataFrame(
@@ -316,7 +316,7 @@ end
 ```
 
 ```{julia}
-df = Get_Samples(3, 50)
+df = Get_Samples(3, 5)
 let
     Discount_Rate = df.discount_rate
     NPV = (df.npv)./1_000_000
@@ -326,7 +326,7 @@ let
         NPV;
         color=Height,
         xlabel="Discount Rate",
-        ylabel="NPV Millions of (USD)",
+        ylabel="NPV (Millions of USD)",
         label="NPV given discount rate for 3ft elevation",
         legend=:bottomright,
         size=(800, 400),
@@ -335,8 +335,104 @@ let
 end
 ```
 
+Things look a little different now.  While there is still a correlation between discount rate and npv, it's more visible in the bottom part of the graph.  Many NPVs seem to be higher regardless of the discount rate.  This is probably due to some flooding scenarios not being as bad as others.  If there is little flooding, NPV will be less dependant on discount rate, because future costs are less of a concern.  
+
+We want to compare outcomes for different actions, so let's do that.
+
+
+```{julia}
+df = Get_Samples(0, 3)
+Discount_Rate = df.discount_rate
+NPV = (df.npv)./1_000_000
+Height = Int.(ustrip.(df.Δh_ft))
+scatter(
+    Discount_Rate,
+    NPV;
+    color=Height,
+    xlabel="Discount Rate",
+    ylabel="NPV Millions of (USD)",
+    label="NPV given discount rate for 0ft elevation",
+    #legend=:bottomright,
+    #size=(800, 400),
+    #yformatter=:plain, # prevents scientific notation
+)
+
+
+df = Get_Samples(1, 3)
+Discount_Rate = df.discount_rate
+NPV = (df.npv)./1_000_000
+Height = Int.(ustrip.(df.Δh_ft))
+scatter!(
+    Discount_Rate,
+    NPV;
+    color=Height,
+    xlabel="Discount Rate",
+    ylabel="NPV Millions of (USD)",
+    label="NPV given discount rate for 1ft elevation",
+    #legend=:bottomright,
+    #size=(800, 400),
+    #yformatter=:plain, # prevents scientific notation
+)
+```
+
+
+```{julia}
+
+samples = 3
+df = Get_Samples(0, samples)  
+Discount_Rate = df.discount_rate
+NPV = (df.npv)./1_000_000
+Height = Int.(ustrip.(df.Δh_ft)[1])
+scatter(
+    Discount_Rate,
+    NPV;
+    color=Height,
+    xlabel="Discount Rate",
+    ylabel="NPV (Millions of USD)",
+    label="NPV given discount rate for $Height ft elevation",
+)
+
+
+for i in range(1, 3)
+    df = Get_Samples(i, samples)  
+    Discount_Rate = df.discount_rate
+    NPV = (df.npv)./1_000_000
+    Height = Int.(ustrip.(df.Δh_ft)[1])
+    scatter!(
+        Discount_Rate,
+        NPV;
+        color=Height,
+        xlabel="Discount Rate",
+        ylabel="NPV (Millions of USD)",
+        label="NPV given discount rate for $Height ft elevation",
+    )
+    return current()
+end
 
 ```
+
+```{julia}
+
+for i in range(1, 3)
+    df = Get_Samples(i, 3)  
+    Discount_Rate = df.discount_rate
+    NPV = (df.npv)./1_000_000
+    Height = Int.(ustrip.(df.Δh_ft))
+    plot = scatter(
+        Discount_Rate,
+        NPV;
+        color=Height,
+        xlabel="Discount Rate",
+        ylabel="NPV (Millions of USD)",
+        label="NPV given discount rate for 0ft elevation",
+    )
+ 
+end  
+
+
+```
+
+
 
 Testing Cell: 
 ```{julia}
