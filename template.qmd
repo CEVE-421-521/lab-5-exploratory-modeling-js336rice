@@ -232,8 +232,9 @@ Column_length = 10
 sows = [SOW(rand(slr_scenarios), draw_surge_distribution(), draw_discount_rate()) for _ in 1:Column_length] 
 
 #For situations like these where sample sizes are less than 10, and randomness or uncertainty aren't part of how high we elevate our house, I believe having a structured set of actions that we can reliable compare to be the best choice
-actions = [Action(i*1u"ft") for i in range(0, 9, 10)]#[Action(3.0u"ft") for _ in 1:Column_length]
-
+#actions = [Action(i*1u"ft") for i in range(0, 9, 10)]
+actions = [Action(3.0u"ft") for _ in 1:Column_length]
+actions = vcat([Action(0.0u"ft") for _ in 1:5],[Action(1.0u"ft") for _ in 1:5])
 results = [run_sim(a, s, p) for (a, s) in zip(actions, sows)]
 ```
 
@@ -257,23 +258,22 @@ df = DataFrame(
 
 
 For a constant action of elevating by 3 feet, let's look at how discount rate impacts our net present value:
-```{julia}
-df.discount_rate
-```
-
 
 ```{julia}
 let
     Discount_Rate = df.discount_rate
     NPV = (df.npv)./1_000_000
     Height = Int.(ustrip.(df.Δh_ft))
+    labels = ["$i feet of elevation" for i in 0:9]
     scatter(
         Discount_Rate,
         NPV;
         color=Height,
         xlabel="Discount Rate",
         ylabel="NPV Millions of (USD)",
-        label="NPV given discount rate for 3ft elevation",
+        group=labels,#repeat('0':'9', 1),
+        #label = ["a" "b"],#[i] for i in 0:9,
+        #label="NPV given discount rate for 3ft elevation",
         legend=:bottomright,
         size=(800, 400),
         yformatter=:plain, # prevents scientific notation
@@ -283,6 +283,7 @@ end
 
 Testing Cell: 
 ```{julia}
-Int.(ustrip.(df.Δh_ft))
+#Int.(ustrip.(df.Δh_ft))
+println(repeat('0':'9', 1))
 #println([Action(i*1u"ft") for i in range(0, 12, 10)])
 ```
