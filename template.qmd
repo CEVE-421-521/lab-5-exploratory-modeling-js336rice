@@ -398,15 +398,17 @@ for i in range(1, 3)
     Discount_Rate = df.discount_rate
     NPV = (df.npv)./1_000_000
     Height = Int.(ustrip.(df.Δh_ft)[1])
-    scatter!(
+    println(Height)
+    display(scatter!(
         Discount_Rate,
         NPV;
         color=Height,
         xlabel="Discount Rate",
         ylabel="NPV (Millions of USD)",
         label="NPV given discount rate for $Height ft elevation",
-    )
-    return current()
+    ))
+    
+    #return current()
 end
 
 ```
