@@ -1,6 +1,6 @@
 ---
 title: "Lab 5: Sea-Level Rise"
-author: "<Your Name (NetID)>"
+author: "Jonah Schaechter js336>"
 jupyter: julia-1.10
 date: 2024-02-16
 
@@ -232,7 +232,7 @@ Column_length = 10
 sows = [SOW(rand(slr_scenarios), draw_surge_distribution(), draw_discount_rate()) for _ in 1:Column_length] 
 
 #For situations like these where sample sizes are less than 10, and randomness or uncertainty aren't part of how high we elevate our house, I believe having a structured set of actions that we can reliable compare to be the best choice
-actions = [Action(i*1u"ft") for i in range(0, 12, Column_length)] 
+actions = [Action(i*1u"ft") for i in range(0, 9, 10)]#[Action(3.0u"ft") for _ in 1:Column_length]
 
 results = [run_sim(a, s, p) for (a, s) in zip(actions, sows)]
 ```
@@ -256,7 +256,33 @@ df = DataFrame(
 ```
 
 
+For a constant action of elevating by 3 feet, let's look at how discount rate impacts our net present value:
+```{julia}
+df.discount_rate
+```
+
 
 ```{julia}
-println([Action(i*1u"ft") for i in range(0, 12, 10)])
+let
+    Discount_Rate = df.discount_rate
+    NPV = (df.npv)./1_000_000
+    Height = Int.(ustrip.(df.Δh_ft))
+    scatter(
+        Discount_Rate,
+        NPV;
+        color=Height,
+        xlabel="Discount Rate",
+        ylabel="NPV Millions of (USD)",
+        label="NPV given discount rate for 3ft elevation",
+        legend=:bottomright,
+        size=(800, 400),
+        yformatter=:plain, # prevents scientific notation
+    )
+end
+```
+
+Testing Cell: 
+```{julia}
+Int.(ustrip.(df.Δh_ft))
+#println([Action(i*1u"ft") for i in range(0, 12, 10)])
 ```
