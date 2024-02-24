@@ -226,15 +226,23 @@ res = run_sim(a, sow, p)
 
 ```{julia}
 
-Column_length = 10
+Column_length = 100
 # I'm not well caught up on predictions or galveston weather, so I feel most comfortable sampling randomly for SLR and storm surge. 
 #For discount rate, I'd say I'm confident enough in my knowledge of macroeconomics to choose a distribution, but not enough to bias that distribution in any given direction.
 sows = [SOW(rand(slr_scenarios), draw_surge_distribution(), draw_discount_rate()) for _ in 1:Column_length] 
 
 #For situations like these where sample sizes are less than 10, and randomness or uncertainty aren't part of how high we elevate our house, I believe having a structured set of actions that we can reliable compare to be the best choice
+num_choices = 9
+actions = []
+for i in range(0, 9, 10)
+    for j in range(1, 10)
+        push!(actions, Action(i*1u"ft"))
+    end
+end
 #actions = [Action(i*1u"ft") for i in range(0, 9, 10)]
-actions = [Action(3.0u"ft") for _ in 1:Column_length]
-actions = vcat([Action(0.0u"ft") for _ in 1:5],[Action(1.0u"ft") for _ in 1:5])
+
+#actions = [Action(3.0u"ft") for _ in 1:Column_length]
+#actions = vcat([Action(0.0u"ft") for _ in 1:5],[Action(1.0u"ft") for _ in 1:5])
 results = [run_sim(a, s, p) for (a, s) in zip(actions, sows)]
 ```
 
@@ -264,6 +272,7 @@ let
     Discount_Rate = df.discount_rate
     NPV = (df.npv)./1_000_000
     Height = Int.(ustrip.(df.Δh_ft))
+    #have a label for each increment of elevation
     labels = ["$i feet of elevation" for i in 0:9]
     scatter(
         Discount_Rate,
