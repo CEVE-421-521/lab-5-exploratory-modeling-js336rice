@@ -283,7 +283,7 @@ let
 end
 ```
 
-There looks like there's some visible impact.  Does this hold for more samples?  What happens if we d0 100?
+There looks like there's some visible impact.  Does this hold for more samples?  What happens if we do 100?
 
 ```{julia}
 function Get_Samples(Height, Col)
@@ -309,7 +309,7 @@ end
 ```
 
 ```{julia}
-df = Get_Samples(3, 5)
+df = Get_Samples(3, 100)
 let
     Discount_Rate = df.discount_rate
     NPV = (df.npv)./1_000_000
