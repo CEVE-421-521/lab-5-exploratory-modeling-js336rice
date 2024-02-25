@@ -457,7 +457,48 @@ end
 
 ```
 
-NPV is very dependent on storm surge mean, espevially for lower elevation values.
+NPV doesn't seem very dependent on storm surge mean.  This is probably becasue we're looking at this simulation across many years, and floods will eventually happen across these time scales, even in low-surge simulations.
+
+```{julia}
+
+samples = 10
+df = Get_Samples(0, samples)  
+Tstar = df.slr_tstar
+NPV = (df.npv)./1_000_000
+Height = Int.(ustrip.(df.Δh_ft)[1])
+scatter(
+    Tstar,
+    NPV;
+    color=Height,
+    xlabel="Year that rapid sea level rise commenses",
+    ylabel="NPV (Millions of USD)",
+    label="NPV given sea level rise comencment year for $Height ft elevation",
+)
+
+#c = 1 #color variable
+for i in [1, 4, 8, 12]
+    df = Get_Samples(i, samples)  
+    Tstar = df.slr_tstar
+    NPV = (df.npv)./1_000_000
+    Height = Int.(ustrip.(df.Δh_ft)[1])
+    println(Height)
+    display(scatter!(
+        Tstar,
+        NPV;
+        palette = :tab10, #color pallette that's easier to tell apart
+        color=Height, 
+        xlabel="Year that rapid sea level rise commenses",
+        ylabel="NPV (Millions of USD)",
+        label="NPV given sea level rise comencment year for $Height ft elevation",
+    ))
+    #c += 1
+    #return current()
+end
+
+```
+
+
+
 
 Testing Cell: 
 ```{julia}
