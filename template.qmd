@@ -192,7 +192,7 @@ function draw_discount_rate()
     return rand(Normal(0.04, 0.02))
 end
 ```
-Model the house from 2024 to 2083
+Model the house from 2024 to 2083.  This is much longer than I did in the past, but I wanted the high-variance of sea level rise in the long term to come in to play.
 
 ```{julia}
 #| output: false
@@ -377,7 +377,7 @@ scatter!(
 
 
 ```{julia}
-#import colorschemes
+
 samples = 10
 df = Get_Samples(0, samples)  
 Discount_Rate = df.discount_rate
@@ -417,9 +417,62 @@ end
 Our results are very interesting!  It looks like raising the house higher increases NPV, but it also decreases the dependence of the NPV on the discount rare.  This makes sense, because the higher the house is elevated, the less it will flood in the future, and the less impact future losses have on NPV.
 
 
+Now lets look at how NPV depends on the storm surge mean:
+
+```{julia}
+
+samples = 10
+df = Get_Samples(0, samples)  
+SurgeMean = df.surge_μ
+NPV = (df.npv)./1_000_000
+Height = Int.(ustrip.(df.Δh_ft)[1])
+scatter(
+    SurgeMean,
+    NPV;
+    color=Height,
+    xlabel="Storm Surge Mean (ft)",
+    ylabel="NPV (Millions of USD)",
+    label="NPV given Storm Surge Mean for $Height ft elevation",
+)
+
+#c = 1 #color variable
+for i in [1, 4, 8, 12]
+    df = Get_Samples(i, samples)  
+    SurgeMean = df.surge_μ
+    NPV = (df.npv)./1_000_000
+    Height = Int.(ustrip.(df.Δh_ft)[1])
+    println(Height)
+    display(scatter!(
+        SurgeMean,
+        NPV;
+        palette = :tab10, #color pallette that's easier to tell apart
+        color=Height, 
+        xlabel="Storm Surge mean (ft)",
+        ylabel="NPV (Millions of USD)",
+        label="NPV given Storm Surge Mean for $Height ft elevation",
+    ))
+    #c += 1
+    #return current()
+end
+
+```
+
+NPV is very dependent on storm surge mean, espevially for lower elevation values.
+
 Testing Cell: 
 ```{julia}
 #Int.(ustrip.(df.Δh_ft))
 println(repeat('0':'9', 1))
 #println([Action(i*1u"ft") for i in range(0, 12, 10)])
 ```
+
+- When do you get the best results?
+For the elevation values tested, we see the best results around 8 feet of elevation.  We seem to start having deminishing returns once we elevate higher than this.  
+
+- When do you get the worst results?
+When not elevating, or when elevating a small amount.  This house benefits greatly from being elevated.
+
+
+- What are the most important parameters?
+- If you had unlimited computing power, would you run more simulations? How many?
+- What are the implications of your results for decision-making?
