@@ -546,18 +546,23 @@ Of all the variables we have looked at, elevation height has by far the greatest
 
 
 - When do you get the best results?
+
 For the elevation values tested, we see the best results around 8 feet of elevation.  In many scenarios, we start to see some diminishung returns when elevating higher to 12 ft.
 
 - When do you get the worst results?
+
 When not elevating, or when elevating a small amount.  This house benefits greatly from being elevated.
 
 
 - What are the most important parameters?
+
 By far, how high the home is elevated is the most important parameter
 
 - If you had unlimited computing power, would you run more simulations? How many?
+
 Yes.  I'd be curious to look at trends in the extreme scenarios, and see what patterns we can find or become clearer with more data points.  I'd want at least 100 simulations per home elevation. 
 
 
 - What are the implications of your results for decision-making?
+
 Elevating this home is very important for it's NPV and how it will fare in the future.  Although there is such a thing as elevating so high that it's not worth it any more, for this home, you have to elevate very high (at least above 8 feet!) to reach that point.
