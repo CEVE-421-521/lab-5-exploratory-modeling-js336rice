@@ -497,7 +497,7 @@ end
 
 ```
 
-Of all the variables we have looked at, elevation height has by far the greatest impact on NPV outcomes, and a very clear dependancy can be observed.
+Of all the variables we have looked at, elevation height has by far the greatest impact on NPV outcomes, and a very clear dependency can be observed.
 
 
 
