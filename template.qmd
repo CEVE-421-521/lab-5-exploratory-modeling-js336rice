@@ -332,43 +332,6 @@ Things look a little different now.  While there is still a correlation between 
 
 We want to compare outcomes for different actions, so let's do that.
 
-
-```{julia}
-df = Get_Samples(0, 3)
-Discount_Rate = df.discount_rate
-NPV = (df.npv)./1_000_000
-Height = Int.(ustrip.(df.Δh_ft))
-scatter(
-    Discount_Rate,
-    NPV;
-    color=Height,
-    xlabel="Discount Rate",
-    ylabel="NPV Millions of (USD)",
-    label="NPV given discount rate for 0ft elevation",
-    #legend=:bottomright,
-    #size=(800, 400),
-    #yformatter=:plain, # prevents scientific notation
-)
-
-
-df = Get_Samples(1, 3)
-Discount_Rate = df.discount_rate
-NPV = (df.npv)./1_000_000
-Height = Int.(ustrip.(df.Δh_ft))
-scatter!(
-    Discount_Rate,
-    NPV;
-    color=Height,
-    xlabel="Discount Rate",
-    ylabel="NPV Millions of (USD)",
-    label="NPV given discount rate for 1ft elevation",
-    #legend=:bottomright,
-    #size=(800, 400),
-    #yformatter=:plain, # prevents scientific notation
-)
-```
-
-
 ```{julia}
 
 samples = 10
@@ -407,7 +370,7 @@ end
 
 ```
 
-Our results are very interesting!  It looks like raising the house higher increases NPV, but it also decreases the dependence of the NPV on the discount rare.  This makes sense, because the higher the house is elevated, the less it will flood in the future, and the less impact future losses have on NPV.
+Our results are very interesting!  It looks like raising the house higher increases NPV, but it also decreases the dependence of the NPV on the discount rate.  This makes sense, because the higher the house is elevated, the less it will flood in the future, and the less impact future losses have on NPV.
 
 
 Now lets look at how NPV depends on the storm surge mean:
