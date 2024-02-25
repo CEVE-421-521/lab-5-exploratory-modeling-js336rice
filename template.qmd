@@ -472,7 +472,7 @@ scatter(
     color=Height,
     xlabel="Year that rapid sea level rise commenses",
     ylabel="NPV (Millions of USD)",
-    label="NPV given sea level rise comencment year for $Height ft elevation",
+    label="NPV given T* for $Height ft elevation",
 )
 
 #c = 1 #color variable
@@ -489,7 +489,7 @@ for i in [1, 4, 8, 12]
         color=Height, 
         xlabel="Year that rapid sea level rise commenses",
         ylabel="NPV (Millions of USD)",
-        label="NPV given sea level rise comencment year for $Height ft elevation",
+        label="NPV given T* for $Height ft elevation",
     ))
     #c += 1
     #return current()
@@ -498,22 +498,66 @@ end
 ```
 
 
+T* is the year that sea levels begin increasing rapidly in our simulation.  There seems to be some dependence of NPV on T*. 
 
 
-Testing Cell: 
+Now for comparison, let's direclty look at the dependence of NPV on how much we elevate the home:
+
 ```{julia}
-#Int.(ustrip.(df.Δh_ft))
-println(repeat('0':'9', 1))
-#println([Action(i*1u"ft") for i in range(0, 12, 10)])
+
+samples = 10
+df = Get_Samples(0, samples)  
+NPV = (df.npv)./1_000_000
+Height = Int.(ustrip.(df.Δh_ft))
+scatter(
+    Height,
+    NPV;
+    color=0,
+    xlabel="Elevation Height",
+    ylabel="NPV (Millions of USD)",
+    #legend=false,
+    label="NPV given 0 ft elevation",
+)
+
+#c = 1 #color variable
+for i in [1, 4, 8, 12]
+    df = Get_Samples(i, samples)  
+    NPV = (df.npv)./1_000_000
+    Height = Int.(ustrip.(df.Δh_ft))
+    #println(Height)
+    display(scatter!(
+        Height,
+        NPV;
+        palette = :tab10, #color pallette that's easier to tell apart
+        color=i, 
+        xlabel="Elevation Height",
+        ylabel="NPV (Millions of USD)",
+        #legend=false,
+        label="NPV given $i ft elevation",
+    ))
+    #c += 1
+    #return current()
+end
+
 ```
 
+Of all the variables we have looked at, elevation height has by far the greatest impact on NPV outcomes, and a very clear dependancy can be observed.
+
+
+
 - When do you get the best results?
-For the elevation values tested, we see the best results around 8 feet of elevation.  We seem to start having deminishing returns once we elevate higher than this.  
+For the elevation values tested, we see the best results around 8 feet of elevation.  In many scenarios, we start to see some diminishung returns when elevating higher to 12 ft.
 
 - When do you get the worst results?
 When not elevating, or when elevating a small amount.  This house benefits greatly from being elevated.
 
 
 - What are the most important parameters?
+By far, how high the home is elevated is the most important parameter
+
 - If you had unlimited computing power, would you run more simulations? How many?
+Yes.  I'd be curious to look at trends in the extreme scenarios, and see what patterns we can find or become clearer with more data points.  I'd want at least 100 simulations per home elevation. 
+
+
 - What are the implications of your results for decision-making?
+Elevating this home is very important for it's NPV and how it will fare in the future.  Although there is such a thing as elevating so high that it's not worth it any more, for this home, you have to elevate very high (at least above 8 feet!) to reach that point.
