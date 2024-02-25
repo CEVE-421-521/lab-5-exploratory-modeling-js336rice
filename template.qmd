@@ -377,7 +377,7 @@ scatter!(
 
 
 ```{julia}
-
+#import colorschemes
 samples = 10
 df = Get_Samples(0, samples)  
 Discount_Rate = df.discount_rate
@@ -392,8 +392,8 @@ scatter(
     label="NPV given discount rate for $Height ft elevation",
 )
 
-
-for i in range(start=1, stop=7, step=3)
+#c = 1 #color variable
+for i in [1, 4, 8, 12]
     df = Get_Samples(i, samples)  
     Discount_Rate = df.discount_rate
     NPV = (df.npv)./1_000_000
@@ -402,17 +402,19 @@ for i in range(start=1, stop=7, step=3)
     display(scatter!(
         Discount_Rate,
         NPV;
-        color=Height,
+        palette = :tab10, #color pallette that's easier to tell apart
+        color=Height, 
         xlabel="Discount Rate",
         ylabel="NPV (Millions of USD)",
         label="NPV given discount rate for $Height ft elevation",
     ))
-    
+    #c += 1
     #return current()
 end
 
 ```
 
+Our results are very interesting!  It looks like raising the house higher increases NPV, but it also decreases the dependence of the NPV on the discount rare.  This makes sense, because the higher the house is elevated, the less it will flood in the future, and the less impact future losses have on NPV.
 
 
 Testing Cell: 
