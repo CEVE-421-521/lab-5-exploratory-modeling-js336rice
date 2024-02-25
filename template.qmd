@@ -494,7 +494,7 @@ end
 T* is the year that sea levels begin increasing rapidly in our simulation.  There seems to be some dependence of NPV on T*. 
 
 
-Now for comparison, let's direclty look at the dependence of NPV on how much we elevate the home:
+Now for comparison, let's directly look at the dependence of NPV on how much we elevate the home:
 
 ```{julia}
 
